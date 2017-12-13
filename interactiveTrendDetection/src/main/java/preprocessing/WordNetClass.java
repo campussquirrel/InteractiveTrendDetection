@@ -39,7 +39,7 @@ public class WordNetClass {
 	public static void main(String[] args) {
 		
 		
-		String word1="type";
+		String word1="material";
 		DepthFinder depthfinder=new DepthFinder(db);
 		PathFinder pathfinder=new PathFinder(db);
 		int depth1;
@@ -67,23 +67,19 @@ public class WordNetClass {
 			Set<String> nextGeneration = new HashSet<String>();
 			nextGeneration=nextGenerationRetriever(hyponyms,pos);
 			
-			Set<String> setOfRelevantTerms = new HashSet<String>();
+			/*Set<String> setOfRelevantTerms = new HashSet<String>();
 			//starting from Lowest Common Subsummer to be the last term on the tree of word1 (criterion indicator)
 			double LCS_depth;
 			int upperbound=1;
 			int lowerbound=0;
 			
+			LCS_depth=depth1;
 			while (upperbound-lowerbound >= 0){
 				
-				LCS_depth=depth1;
 				upperbound= (int) ((int) (2/criterionSimilarityDegree)*LCS_depth - depth1);
 				lowerbound=(int)LCS_depth;
 				
-				
-				
-				
-				
-			}
+			}*/
 			
 			System.out.println( "The number of 1st generation is: \t"+ hyponyms.size()+"\n and the children(hyponyms) of "+word1+" are: \t"+ hyponyms );
 			System.out.println( "The number of the 2nd generation is: \t"+ nextGeneration.size()+"\n The 2nd generation are: \t"+ nextGeneration );
