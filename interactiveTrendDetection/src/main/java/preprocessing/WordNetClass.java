@@ -53,10 +53,12 @@ public class WordNetClass {
 			
 		}
 		
-			//computing the depth of the word indicating the desired criterion 
+			//computing the depth of the word indicating the desired criterion (d1)
 		    Concept synset=synsetStrings.get(0);
+		   
 		    depth1 = depthfinder.getShortestDepth( synset);
-			
+		    System.out.println(depth1);
+		   
 			Set<String> hyponyms = JAWJAW.findHyponyms(word1, pos);
 			
 			
