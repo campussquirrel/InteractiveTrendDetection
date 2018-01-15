@@ -37,6 +37,8 @@ import edu.cmu.lti.jawjaw.db.SynsetDefDAO;
 import edu.cmu.lti.jawjaw.db.WordDAO;
 
 
+
+
 public class WordNetClass {
 	
 	private static ILexicalDatabase db = new NictWordNet();
@@ -123,19 +125,22 @@ public class WordNetClass {
 		    	}
 		    
 		   
-			Set<String> hyponyms = JAWJAW.findHyponyms(word1, pos);
 			
 			
+			//get the HyperTree of the word indicating the desired criterion (word1)
 			Set<String> history = new HashSet<String>();
 			List<List<String>> hyperTree1 = pathfinder.getHypernymTrees(senses.get(0).getSynset(), history);
-			for(List<String> onePath: hyperTree1){
+			for(List<String> availablePath: hyperTree1){
 				
-					System.out.println(onePath);	
+					System.out.println(availablePath);	
 				
 				
 			}
 			
 			
+			
+			
+			Set<String> hyponyms = JAWJAW.findHyponyms(word1, pos);
 			Set<String> nextGeneration = new HashSet<String>();
 			nextGeneration=nextGenerationRetriever(hyponyms,pos);
 			
@@ -182,5 +187,8 @@ public class WordNetClass {
 		return nextGeneration;
 		
 	}
+	
+	
+	
 		
 }
