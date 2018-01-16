@@ -68,7 +68,10 @@ public class WordNetClass {
 		//Synset synset1 = SynsetDAO.findSynsetBySynset( synsetId );
 		//SynsetDef synsetDef = SynsetDefDAO.findSynsetDefBySynsetAndLang(synsetId, Lang.eng);
 		//List<Synlink> synlinks = SynlinkDAO.findSynlinksBySynset( synsetId );
-	
+		String word2="entity";
+		List<Word> words2 = WordDAO.findWordsByLemmaAndPos(word2, pos);
+		List<Sense> senses2 = SenseDAO.findSensesByWordid( words2.get(0).getWordid() );
+		List<Concept> synsetStrings2 = new ArrayList<Concept>(senses2.size());	
 		// Showing the result
 
 		System.out.println( words.get(0) );
@@ -137,7 +140,8 @@ public class WordNetClass {
 				
 			}
 			
-			
+			Concept theroot = pathfinder.getRoot(senses.get(1).getSynset());
+			System.out.println("the root: "+theroot.getName());	
 			
 			
 			Set<String> hyponyms = JAWJAW.findHyponyms(word1, pos);
