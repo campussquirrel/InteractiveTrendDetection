@@ -35,6 +35,9 @@ import edu.cmu.lti.jawjaw.db.SynlinkDAO;
 import edu.cmu.lti.jawjaw.db.SynsetDAO;
 import edu.cmu.lti.jawjaw.db.SynsetDefDAO;
 import edu.cmu.lti.jawjaw.db.WordDAO;
+import edu.cmu.lti.jawjaw.db.SynlinkDAO;
+import edu.cmu.lti.jawjaw.db.SynsetDefDAO;
+import edu.cmu.lti.jawjaw.db.SenseDAO;
 
 
 
@@ -72,6 +75,8 @@ public class WordNetClass {
 		List<Word> words2 = WordDAO.findWordsByLemmaAndPos(word2, pos);
 		List<Sense> senses2 = SenseDAO.findSensesByWordid( words2.get(0).getWordid() );
 		List<Concept> synsetStrings2 = new ArrayList<Concept>(senses2.size());	
+		
+		
 		// Showing the result
 
 		System.out.println( words.get(0) );
@@ -141,7 +146,13 @@ public class WordNetClass {
 			}
 			
 			Concept theroot = pathfinder.getRoot(senses.get(1).getSynset());
-			System.out.println("the root: "+theroot.getName());	
+			//System.out.println("the root: "+theroot.getName());	
+			//System.out.println	( "concept: "+db.conceptToString(senses.get(1).getSynset()) ) ;
+			//List<Word> words = WordDAO.findWordByWordid(word1);
+			//List<Sense> senses = SenseDAO.findSensesByWordid( words.get(0).getWordid() );
+			System.out.println(SenseDAO.findSensesBySynset("14580897-n"));
+			//SenseDAO.
+			
 			
 			
 			Set<String> hyponyms = JAWJAW.findHyponyms(word1, pos);
