@@ -101,6 +101,7 @@ public class WordNetClass {
 			synset1 = SynsetDAO.findSynsetBySynset( synsetId );
 			System.out.println( synset1 );
 			synsetStrings.add(new Concept(synsetId, POS.valueOf(pos.toString())));
+			
 		}
 		
 			//The depth of the word indicating the desired criterion (d1)
@@ -151,7 +152,14 @@ public class WordNetClass {
 			//List<Word> words = WordDAO.findWordByWordid(word1);
 			//List<Sense> senses = SenseDAO.findSensesByWordid( words.get(0).getWordid() );
 			System.out.println(SenseDAO.findSensesBySynset("14580897-n"));
-			//SenseDAO.
+			WordNetUtil wnu = null;
+			List<Word> wordsList=wnu.synsetToWords("06635509-n");
+			for(Word word: wordsList){
+				//System.out.println(word.getLang());
+				if(word.getLang()==Lang.eng){
+				System.out.println(word.getLemma());}
+			}
+			
 			
 			
 			
