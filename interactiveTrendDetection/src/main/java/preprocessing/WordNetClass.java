@@ -190,15 +190,15 @@ public class WordNetClass {
 			Set<String> listofChildren=Trav.getDownwardSynsets("00019613-n");
 			
 			System.out.println("lemmas of the children of the given synsetID: ");	
-		for(String ChildID: listofChildren){
-			List<Word> wordsList=wnu.synsetToWords(ChildID);
-			for(Word word: wordsList){
-				//System.out.println(word.getLang());
-				if(word.getLang()==Lang.eng){
-				System.out.println(word.getLemma());}
+			for(String ChildID: listofChildren){
+				List<Word> wordsList=wnu.synsetToWords(ChildID);
+				for(Word word: wordsList){
+					//System.out.println(word.getLang());
+					if(word.getLang()==Lang.eng){
+					System.out.println(word.getLemma());}
+				}
+				
 			}
-			
-		}
 		
 	}
 		
@@ -224,7 +224,45 @@ public class WordNetClass {
 		
 	}
 	
+	/**
+	 * next generation i.e. the children (as hyponyms) of a particular node are listed by this method.
+	 * 
+	 * @param synsetID synset
+	 * @return listofChildren list of synsets of the corresponding hyponyms 
+	 */
+public static Set<String> nextGenerationSynsets(String synsetID){
+		
+		Set<String> nextGeneration = new HashSet<String>();
+		Traverser Trav=new Traverser();
+		
+		Set<String> listofChildren=Trav.getDownwardSynsets(synsetID);
+
+		return listofChildren;
+		
+	}
+
+/**
+ * returns lemmas of each of the synsets in the list
+ * 
+ * @param listOfsynsets Set<String>
+ * @return listOflemmas Set<String> (could be longer than the given set- multiple lemmas for one synset)
+ */
+
+public static Set<String> getLemmasfromSynsets(Set<String> listOfsynsets){
 	
+	Set<String> listOflemmas = null;
+	WordNetUtil wnu=null;
 	
+	for(String ChildID: listOfsynsets){
+		List<Word> wordsList=wnu.synsetToWords(ChildID);
+		for(Word word: wordsList){
+			//System.out.println(word.getLang());
+			if(word.getLang()==Lang.eng){
+				listOflemmas.add(word.getLemma());}
+		}
+
+   }
+	return listOflemmas;
+}
 		
 }
