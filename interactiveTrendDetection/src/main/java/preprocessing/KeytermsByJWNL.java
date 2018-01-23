@@ -3,6 +3,8 @@ package preprocessing;
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 
 import edu.cmu.lti.lexical_db.data.Concept;
@@ -13,6 +15,7 @@ import net.didion.jwnl.data.POS;
 import net.didion.jwnl.data.PointerType;
 import net.didion.jwnl.data.PointerUtils;
 import net.didion.jwnl.data.Synset;
+import net.didion.jwnl.data.Word;
 import net.didion.jwnl.data.list.PointerTargetNodeList;
 import net.didion.jwnl.data.list.PointerTargetTree;
 import net.didion.jwnl.data.list.PointerTargetNode; 
@@ -28,11 +31,17 @@ public class KeytermsByJWNL {
 		final Dictionary dictionary = Dictionary.getInstance();
 		
 		IndexWord indexWord = dictionary.getIndexWord(POS.NOUN, "material");
+		//Synset synset=dictionary.gets
 
 		//demonstrateTreeOperation(indexWord);
 		System.out.println("The hypernym Tree is : ");
 		demonstrateHyperTreeOperation(indexWord);
 		
+		
+		//System.out.println("The list");
+		//demonstrateListOperation(indexWord);
+		//PointerTargetTree hyperTree = utils.getHypernymTree(synset, depth);
+		//words.addAll(transverse(hyperTree.getRootNode())); 
 		//Synset[] senses = indexWord.getSenses();
 
 		/*	for (Synset sense : senses) {
@@ -43,7 +52,7 @@ public class KeytermsByJWNL {
 	}
 	
 	//The depth of the word indicating the desired criterion (d1)
-	int depth1;
+	//int depth1;
 	
    /* Concept con=synsetStrings.get(0);
     depth1 = depthfinder.getShortestDepth( con);
@@ -73,8 +82,23 @@ public class KeytermsByJWNL {
     	}*/
     
    
+	public static List<String> transverse(PointerTargetNodeList list) {
+		List<String> words = new LinkedList<String>();
+		for (@SuppressWarnings("rawtypes")
+		Iterator iterator = list.iterator(); iterator.hasNext();) {
+			PointerTargetNode node = (PointerTargetNode) iterator.next();
+			words.addAll(extract(node.getSynset()));
+		}
+		return words;
+	}
+	public static List<String> extract(Synset s) { 
+		  List<String> words = new LinkedList<String>(); 
+		  for(Word w : s.getWords()) { 
+		   words.add(w.getLemma()); 
+		  } 
+		  return words; 
+		 } 
 	
-
 
 	//testing getting hyponyms using JWNL
 		public static void demonstrateTreeOperation(IndexWord word) throws JWNLException {
@@ -95,12 +119,22 @@ public class KeytermsByJWNL {
 			return getSynsets(hyponyms);
 		}
 		
+		public static void demonstrateListOperation(IndexWord word) throws JWNLException {
+			// Get all of the hypernyms (parents) of the first sense of <var>word</var>
+			PointerTargetNodeList hypernyms = PointerUtils.getInstance().getDirectHypernyms(word.getSense(1));
+			System.out.println("Direct hypernyms of \"" + word.getLemma() + "\":");
+			
+			hypernyms.print();
+		}
+		
 		//testing on hypernymTree
 		//testing getting hyponyms using JWNL
 				public static void demonstrateHyperTreeOperation(IndexWord word) throws JWNLException {
 					// Get all the hyponyms (children) of the first sense of <var>word</var>
 					PointerTargetTree hypernyms = PointerUtils.getInstance().getHypernymTree(word.getSense(1));
 					System.out.println("Hyponyms of \"" + word.getLemma() + "\":");
+					System.out.println("The index: ");
+					//System.out.println(+hypernyms.findFirst(PointerUtils.getInstance().);
 					hypernyms.print();
 				}
 		

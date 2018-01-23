@@ -153,12 +153,12 @@ public class WordNetClass {
 			//List<Sense> senses = SenseDAO.findSensesByWordid( words.get(0).getWordid() );
 			System.out.println(SenseDAO.findSensesBySynset("14580897-n"));
 			WordNetUtil wnu = null;
-			List<Word> wordsList=wnu.synsetToWords("06635509-n");
+			/*List<Word> wordsList=wnu.synsetToWords("06635509-n");
 			for(Word word: wordsList){
 				//System.out.println(word.getLang());
 				if(word.getLang()==Lang.eng){
 				System.out.println(word.getLemma());}
-			}
+			}*/
 			
 			
 			
@@ -185,7 +185,20 @@ public class WordNetClass {
 			System.out.println( "The number of the 2nd generation is: \t"+ nextGeneration.size()+"\n The 2nd generation are: \t"+ nextGeneration );
 			hyponyms.addAll(nextGeneration);
 			
+			Traverser Trav=new Traverser();
+			System.out.println("the downward children are: "+Trav.getDownwardSynsets("00019613-n"));
+			Set<String> listofChildren=Trav.getDownwardSynsets("00019613-n");
 			
+			System.out.println("lemmas of the children of the given synsetID: ");	
+		for(String ChildID: listofChildren){
+			List<Word> wordsList=wnu.synsetToWords(ChildID);
+			for(Word word: wordsList){
+				//System.out.println(word.getLang());
+				if(word.getLang()==Lang.eng){
+				System.out.println(word.getLemma());}
+			}
+			
+		}
 		
 	}
 		
