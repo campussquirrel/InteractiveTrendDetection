@@ -42,7 +42,7 @@ import edu.cmu.lti.jawjaw.db.SenseDAO;
 
 
 
-public class WordNetClass {
+public class KeyTermsFinder {
 	
 	private static ILexicalDatabase db = new NictWordNet();
 	
