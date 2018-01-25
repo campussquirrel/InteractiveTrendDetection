@@ -104,9 +104,67 @@ public class KeyTermsFinder {
 			
 		}
 		
+		int depth1;
+	    Concept con=synsetStrings.get(0);
+		//get the HyperTree of the word indicating the desired criterion (word1)
+		Set<String> history = new HashSet<String>();
+		List<List<String>> hyperTree1 = pathfinder.getHypernymTrees(con.getSynset(), history);
+		
+		for(List<String> availablePath: hyperTree1){
+			
+				System.out.println(availablePath);	
+				depth1 = availablePath.size();
+			    System.out.println("depth1:"+ depth1);
+			  //LCS possiblities
+			    List<Integer> LCSList=new ArrayList<Integer>();
+			    int lowerBound_LCS= (int) Math.ceil((double)2*depth1/3);
+			    int upperBound_LCS=depth1+1;
+			    for(int i=lowerBound_LCS; i<upperBound_LCS;i++){
+			    	LCSList.add(i);		   
+			    }
+			  //depth2 (d2) possiblities
+			    List<Integer> d2List=new ArrayList<Integer>();
+			    Set<String> d2ListOfSynsets=new HashSet<String>();
+			    
+			    int upperBound_d2;
+			    int lowerBound_d2;
+			    
+			    for(int LCS:LCSList){
+			    	Set<String> TempListOfSynsets=new HashSet<String>();
+			    	lowerBound_d2=LCS;
+			    	upperBound_d2=(int) Math.floor((double) 2.5*LCS - depth1) +1;
+			    	System.out.println(LCS);
+			    	
+			    	for(int i=lowerBound_d2; i<upperBound_d2;i++){
+			    		System.out.println("ich bin da");
+			    		if(LCS-i==0){
+			    			String synIDatLCS=availablePath.get(LCS-1);
+			    			d2ListOfSynsets.add(synIDatLCS);
+			    			TempListOfSynsets.add(synIDatLCS);
+			    		}else{
+			    		System.out.print("Next Generation of ");
+			    		System.out.println(TempListOfSynsets);
+			    		System.out.println("is: ");
+			    		System.out.println(nextGenerationSynsets(TempListOfSynsets));
+			    		d2ListOfSynsets.addAll(nextGenerationSynsets(TempListOfSynsets));
+			    		if(upperBound_d2-i==1) break;
+			    		TempListOfSynsets=new HashSet<String>(nextGenerationSynsets(TempListOfSynsets));
+			    		}
+			    		
+			    		
+				    	//d2List.add(i);		   
+				    }
+			    	System.out.println("For LCS= "+LCS+" d2 possiblities are: "+d2ListOfSynsets);
+			    	d2List.clear();
+			    }
+			
+		}
+		
+		/*
 			//The depth of the word indicating the desired criterion (d1)
 			int depth1;
 		    Concept con=synsetStrings.get(0);
+		    //TODO: all the possible depths should be investigated not only the shortest one
 		    depth1 = depthfinder.getShortestDepth( con);
 		    System.out.println("depth1:"+ depth1);
 		    
@@ -131,20 +189,12 @@ public class KeyTermsFinder {
 			    }
 		    	System.out.println("For LCS= "+LCS+" d2 possiblities are: "+d2List);
 		    	d2List.clear();
-		    	}
+		    }
 		    
-		   
+		   */
 			
 			
-			//get the HyperTree of the word indicating the desired criterion (word1)
-			Set<String> history = new HashSet<String>();
-			List<List<String>> hyperTree1 = pathfinder.getHypernymTrees(senses.get(0).getSynset(), history);
-			for(List<String> availablePath: hyperTree1){
-				
-					System.out.println(availablePath);	
-				
-				
-			}
+			
 			
 			Concept theroot = pathfinder.getRoot(senses.get(1).getSynset());
 			//System.out.println("the root: "+theroot.getName());	
@@ -186,8 +236,8 @@ public class KeyTermsFinder {
 			hyponyms.addAll(nextGeneration);
 			
 			Traverser Trav=new Traverser();
-			System.out.println("the downward children are: "+Trav.getDownwardSynsets("00019613-n"));
-			Set<String> listofChildren=Trav.getDownwardSynsets("00019613-n");
+			System.out.println("the downward children are: "+Trav.getDownwardSynsets("00020827-n"));
+			Set<String> listofChildren=Trav.getDownwardSynsets("00020827-n");
 			
 			System.out.println("lemmas of the children of the given synsetID: ");	
 			for(String ChildID: listofChildren){
@@ -230,14 +280,18 @@ public class KeyTermsFinder {
 	 * @param synsetID synset
 	 * @return listofChildren list of synsets of the corresponding hyponyms 
 	 */
-public static Set<String> nextGenerationSynsets(String synsetID){
-		
-		Set<String> nextGeneration = new HashSet<String>();
-		Traverser Trav=new Traverser();
-		
-		Set<String> listofChildren=Trav.getDownwardSynsets(synsetID);
 
-		return listofChildren;
+public static Set<String> nextGenerationSynsets(Set<String> tempListOfSynsets){
+		
+		Set<String> nextGeneration = new HashSet<String>();;// = new HashSet<String>();
+		Traverser Trav=new Traverser();
+		for(String synsetID:tempListOfSynsets){
+		Set<String> listofChildren=new HashSet<String>();
+		 listofChildren=Trav.getDownwardSynsets(synsetID); 
+		nextGeneration.addAll(listofChildren);
+		}
+
+		return nextGeneration;
 		
 	}
 
