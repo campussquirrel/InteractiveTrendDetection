@@ -55,14 +55,14 @@ public class KeyTermsFinder {
 	public static void main(String[] args) {
 		
 		
-		String word1="material";//"use";
+		String word1="use";
 		DepthFinder depthfinder=new DepthFinder(db);
 		PathFinder pathfinder=new PathFinder(db);
 		
 		POS pos = POS.valueOf("n");
 		//List<Synset> synsets = WordNetUtil.wordToSynsets(word1, pos);
 		//List<Concept> synsetStrings = new ArrayList<Concept>(synsets.size());
-		double criterionSimilarityDegree=0.8;
+		double criterionSimilarityDegree=0.9;
 		
 		List<Word> words = WordDAO.findWordsByLemmaAndPos(word1, pos);
 		List<Sense> senses = SenseDAO.findSensesByWordid( words.get(0).getWordid() );
@@ -111,86 +111,8 @@ public class KeyTermsFinder {
 		List<List<String>> hyperTree1 = pathfinder.getHypernymTrees(con.getSynset(), history);
 		
 		Set<String> d2ListOfSynsets=new HashSet<String>();
-		//for each path from the criterion term(d1) to the ROOT (all possible HyperTrees)
-		for(List<String> availablePath: hyperTree1){
-			
-				depth1 = availablePath.size();
-			   
-			  //calculating LCS possiblities
-			    
-			    int lowerBound_LCS= (int) Math.ceil((double)2*depth1/3);
-			    int upperBound_LCS=depth1+1;
-			    
-			    //for each LCS, the depth of the potential terms(d2) is being calculated 
-			    for(int i=lowerBound_LCS; i<upperBound_LCS;i++){
-			   			   			    
-			    int upperBound_d2;
-			    int lowerBound_d2;
-			  
-			    	Set<String> TempListOfSynsets=new HashSet<String>();
-			    	lowerBound_d2=i;
-			    	upperBound_d2=(int) Math.floor((double) 2.5*i - depth1) +1;
-			    	
-			    	
-			    	for(int j=lowerBound_d2; j<upperBound_d2;j++){
-			    		
-			    		if(j==i){
-			    			String synIDatLCS=availablePath.get(i-1);
-			    			d2ListOfSynsets.add(synIDatLCS);
-			    			TempListOfSynsets.add(synIDatLCS);
-			    		}else{
-			    		
-			    			
-			    		d2ListOfSynsets.addAll(nextGenerationSynsets(TempListOfSynsets));
-			    		
-			    		if(upperBound_d2-i==1) break;
-			    		TempListOfSynsets=new HashSet<String>(nextGenerationSynsets(TempListOfSynsets));
-			    		}
-			    		
-			    			   
-				    }
-			    	
-			    	//}
-			    }
-			
-		}
-		System.out.println("d2 possiblities are: "+d2ListOfSynsets);
-		System.out.println("d2 size: "+d2ListOfSynsets.size());
 		
-		/*
-			//The depth of the word indicating the desired criterion (d1)
-			int depth1;
-		    Concept con=synsetStrings.get(0);
-		    //TODO: all the possible depths should be investigated not only the shortest one
-		    depth1 = depthfinder.getShortestDepth( con);
-		    System.out.println("depth1:"+ depth1);
-		    
-		    //LCS possiblities
-		    List<Integer> LCSList=new ArrayList<Integer>();
-		    int lowerBound_LCS= (int) Math.ceil((double)2*depth1/3);
-		    int upperBound_LCS=depth1+1;
-		    for(int i=lowerBound_LCS; i<upperBound_LCS;i++){
-		    	LCSList.add(i);		   
-		    }
-		    
-		    //depth2 (d2) possiblities
-		    List<Integer> d2List=new ArrayList<Integer>();
-		    int upperBound_d2;
-		    int lowerBound_d2;
-		    
-		    for(int LCS:LCSList){
-		    	lowerBound_d2=LCS;
-		    	upperBound_d2=(int) Math.floor((double) 2.5*LCS - depth1) +1;
-		    	for(int i=lowerBound_d2; i<upperBound_d2;i++){
-			    	d2List.add(i);		   
-			    }
-		    	System.out.println("For LCS= "+LCS+" d2 possiblities are: "+d2List);
-		    	d2List.clear();
-		    }
-		    
-		   */
-			
-			
+		System.out.println("d2 possibilities: "+getd2ListOfSynsets(hyperTree1,criterionSimilarityDegree).size());
 			
 			
 			Concept theroot = pathfinder.getRoot(senses.get(1).getSynset());
@@ -214,19 +136,7 @@ public class KeyTermsFinder {
 			Set<String> nextGeneration = new HashSet<String>();
 			nextGeneration=nextGenerationRetriever(hyponyms,pos);
 			
-			/*Set<String> setOfRelevantTerms = new HashSet<String>();
-			//starting from Lowest Common Subsummer to be the last term on the tree of word1 (criterion indicator)
-			double LCS_depth;
-			int upperbound=1;
-			int lowerbound=0;
 			
-			LCS_depth=depth1;
-			while (upperbound-lowerbound >= 0){
-				
-				upperbound= (int) ((int) (2/criterionSimilarityDegree)*LCS_depth - depth1);
-				lowerbound=(int)LCS_depth;
-				
-			}*/
 			
 			System.out.println( "The number of 1st generation is: \t"+ hyponyms.size()+"\n and the children(hyponyms) of "+word1+" are: \t"+ hyponyms );
 			System.out.println( "The number of the 2nd generation is: \t"+ nextGeneration.size()+"\n The 2nd generation are: \t"+ nextGeneration );
@@ -251,7 +161,7 @@ public class KeyTermsFinder {
 		
 	
 
-	public static Set<String> nextGenerationRetriever(Set<String> currentGeneration, POS pos){
+public static Set<String> nextGenerationRetriever(Set<String> currentGeneration, POS pos){
 		
 		Set<String> nextGeneration = new HashSet<String>();
 		
@@ -271,8 +181,8 @@ public class KeyTermsFinder {
 		
 	}
 	
-	/**
-	 * next generation i.e. the children (as hyponyms) of a particular node are listed by this method.
+/**
+* next generation i.e. the children (as hyponyms) of a particular node are listed by this method.
 	 * 
 	 * @param synsetID synset
 	 * @return listofChildren list of synsets of the corresponding hyponyms 
@@ -291,9 +201,8 @@ public static Set<String> nextGenerationSynsets(Set<String> tempListOfSynsets){
 		return nextGeneration;
 		
 	}
-
 /**
- * returns lemmas of each of the synsets in the list
+* returns lemmas of each of the synsets in the list
  * 
  * @param listOfsynsets Set<String>
  * @return listOflemmas Set<String> (could be longer than the given set- multiple lemmas for one synset)
@@ -314,6 +223,56 @@ public static Set<String> getLemmasfromSynsets(Set<String> listOfsynsets){
 
    }
 	return listOflemmas;
+}
+/**
+* returns the sysnsetID of each of the possible d2s 
+ * given the criterion similarity degree and the hypertrees of a specific sense of the criterion term
+ * 
+ * @param hyperTreeOfd1 List<List<String>
+ * @param csdegree double
+ * @return d2ListOfSynsets Set<String> 
+ */
+public static Set<String> getd2ListOfSynsets(List<List<String>> hyperTreeOfd1,double csdegree){
+	Set<String> d2ListOfSynsets=new HashSet<String>();
+	int depth1;
+	//for each path from the criterion term(d1) to the ROOT (all possible HyperTrees)
+	for(List<String> availablePath: hyperTreeOfd1){
+		
+			depth1 = availablePath.size();
+		   
+		  //calculating LCS possiblities
+		    
+		    int lowerBound_LCS= (int) Math.ceil((double)(csdegree/(2-csdegree))*depth1);
+		    int upperBound_LCS=depth1+1;
+		    
+		    //for each LCS, the depth of the potential terms(d2) is being calculated 
+		    for(int i=lowerBound_LCS; i<upperBound_LCS;i++){		   			    
+		    int upperBound_d2;
+		    int lowerBound_d2;
+		  
+		    	Set<String> TempListOfSynsets=new HashSet<String>();
+		    	lowerBound_d2=i;
+		    	upperBound_d2=(int) Math.floor((double) (2/csdegree)*i - depth1) +1;
+		    	
+		    	
+		    	for(int j=lowerBound_d2; j<upperBound_d2;j++){
+		    		if(j==i){
+		    			String synIDatLCS=availablePath.get(i-1);
+		    			d2ListOfSynsets.add(synIDatLCS);
+		    			TempListOfSynsets.add(synIDatLCS);
+		    		}else{
+		    		
+		    			
+		    		d2ListOfSynsets.addAll(nextGenerationSynsets(TempListOfSynsets));
+		    		
+		    		if(upperBound_d2-i==1) break;
+		    		TempListOfSynsets=new HashSet<String>(nextGenerationSynsets(TempListOfSynsets));
+		    		}	 
+			    }	
+		    }
+	}
+	
+	return d2ListOfSynsets;
 }
 		
 }
