@@ -58,104 +58,39 @@ public class KeyTermsFinder {
 		String word1="use";
 		DepthFinder depthfinder=new DepthFinder(db);
 		PathFinder pathfinder=new PathFinder(db);
-		
 		POS pos = POS.valueOf("n");
-		//List<Synset> synsets = WordNetUtil.wordToSynsets(word1, pos);
-		//List<Concept> synsetStrings = new ArrayList<Concept>(synsets.size());
 		double criterionSimilarityDegree=0.9;
 		
 		List<Word> words = WordDAO.findWordsByLemmaAndPos(word1, pos);
 		List<Sense> senses = SenseDAO.findSensesByWordid( words.get(0).getWordid() );
 		List<Concept> synsetStrings = new ArrayList<Concept>(senses.size());	
-		//String synsetId = senses.get(0).getSynset();
-		//Synset synset1 = SynsetDAO.findSynsetBySynset( synsetId );
-		//SynsetDef synsetDef = SynsetDefDAO.findSynsetDefBySynsetAndLang(synsetId, Lang.eng);
+		String synsetId = senses.get(0).getSynset();
+		Synset synset1 = SynsetDAO.findSynsetBySynset( synsetId );
+		SynsetDef synsetDef;// = SynsetDefDAO.findSynsetDefBySynsetAndLang(synsetId, Lang.eng);
 		//List<Synlink> synlinks = SynlinkDAO.findSynlinksBySynset( synsetId );
 		String word2="entity";
 		List<Word> words2 = WordDAO.findWordsByLemmaAndPos(word2, pos);
-		List<Sense> senses2 = SenseDAO.findSensesByWordid( words2.get(0).getWordid() );
-		List<Concept> synsetStrings2 = new ArrayList<Concept>(senses2.size());	
 		
-		
-		// Showing the result
-
-		System.out.println( words.get(0) );
-
-		System.out.println( senses.get(0) );
-
-		//System.out.println( synset1 );
-
-		//System.out.println( synsetDef );
-
-		//System.out.println( synlinks.get(0) );
-		
-		/*for (Synset synset : synsets ) {
-			System.out.println(synset);
-			synsetStrings.add(new Concept(synset.getSynset(), POS.valueOf(pos.toString())));
-			
-		}*/
-		String synsetId;
-		Synset synset1 ;
 		for(Sense sense: senses){
 			synsetId = sense.getSynset();
 			synset1 = SynsetDAO.findSynsetBySynset( synsetId );
+			synsetDef = SynsetDefDAO.findSynsetDefBySynsetAndLang(synsetId, Lang.eng);
 			System.out.println( synset1 );
+			System.out.println( synsetDef );
 			synsetStrings.add(new Concept(synsetId, POS.valueOf(pos.toString())));
 			
 		}
 		
-		int depth1;
-	    Concept con=synsetStrings.get(0);
+		
+	    Concept con=synsetStrings.get(3);
 		//get the HyperTree of the word indicating the desired criterion (word1)
 		Set<String> history = new HashSet<String>();
 		List<List<String>> hyperTree1 = pathfinder.getHypernymTrees(con.getSynset(), history);
 		
 		Set<String> d2ListOfSynsets=new HashSet<String>();
-		
-		System.out.println("d2 possibilities: "+getd2ListOfSynsets(hyperTree1,criterionSimilarityDegree).size());
-			
-			
-			Concept theroot = pathfinder.getRoot(senses.get(1).getSynset());
-			//System.out.println("the root: "+theroot.getName());	
-			//System.out.println	( "concept: "+db.conceptToString(senses.get(1).getSynset()) ) ;
-			//List<Word> words = WordDAO.findWordByWordid(word1);
-			//List<Sense> senses = SenseDAO.findSensesByWordid( words.get(0).getWordid() );
-			System.out.println(SenseDAO.findSensesBySynset("14580897-n"));
-			WordNetUtil wnu = null;
-			/*List<Word> wordsList=wnu.synsetToWords("06635509-n");
-			for(Word word: wordsList){
-				//System.out.println(word.getLang());
-				if(word.getLang()==Lang.eng){
-				System.out.println(word.getLemma());}
-			}*/
-			
-			
-			
-			
-			Set<String> hyponyms = JAWJAW.findHyponyms(word1, pos);
-			Set<String> nextGeneration = new HashSet<String>();
-			nextGeneration=nextGenerationRetriever(hyponyms,pos);
-			
-			
-			
-			System.out.println( "The number of 1st generation is: \t"+ hyponyms.size()+"\n and the children(hyponyms) of "+word1+" are: \t"+ hyponyms );
-			System.out.println( "The number of the 2nd generation is: \t"+ nextGeneration.size()+"\n The 2nd generation are: \t"+ nextGeneration );
-			hyponyms.addAll(nextGeneration);
-			
-			Traverser Trav=new Traverser();
-			System.out.println("the downward children are: "+Trav.getDownwardSynsets("00020827-n"));
-			Set<String> listofChildren=Trav.getDownwardSynsets("00020827-n");
-			
-			System.out.println("lemmas of the children of the given synsetID: ");	
-			for(String ChildID: listofChildren){
-				List<Word> wordsList=wnu.synsetToWords(ChildID);
-				for(Word word: wordsList){
-					//System.out.println(word.getLang());
-					if(word.getLang()==Lang.eng){
-					System.out.println(word.getLemma());}
-				}
-				
-			}
+		d2ListOfSynsets=getd2ListOfSynsets(hyperTree1,criterionSimilarityDegree);
+		System.out.println("d2 possibilities: "+d2ListOfSynsets+"\n"+d2ListOfSynsets.size());
+		System.out.println("lemma list is:\n "+getLemmasfromSynsets(d2ListOfSynsets));
 		
 	}
 		
@@ -190,7 +125,7 @@ public static Set<String> nextGenerationRetriever(Set<String> currentGeneration,
 
 public static Set<String> nextGenerationSynsets(Set<String> tempListOfSynsets){
 		
-		Set<String> nextGeneration = new HashSet<String>();;// = new HashSet<String>();
+		Set<String> nextGeneration = new HashSet<String>();// = new HashSet<String>();
 		Traverser Trav=new Traverser();
 		for(String synsetID:tempListOfSynsets){
 		Set<String> listofChildren=new HashSet<String>();
@@ -210,7 +145,7 @@ public static Set<String> nextGenerationSynsets(Set<String> tempListOfSynsets){
 
 public static Set<String> getLemmasfromSynsets(Set<String> listOfsynsets){
 	
-	Set<String> listOflemmas = null;
+	Set<String> listOflemmas = new HashSet<String>();;
 	WordNetUtil wnu=null;
 	
 	for(String ChildID: listOfsynsets){
