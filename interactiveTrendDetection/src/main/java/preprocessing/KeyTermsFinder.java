@@ -55,11 +55,11 @@ public class KeyTermsFinder {
 	public static void main(String[] args) {
 		
 		
-		String word1="use";
+		String word1="material";
 		DepthFinder depthfinder=new DepthFinder(db);
 		PathFinder pathfinder=new PathFinder(db);
 		POS pos = POS.valueOf("n");
-		double criterionSimilarityDegree=0.9;
+		double criterionSimilarityDegree=0.8;
 		
 		List<Word> words = WordDAO.findWordsByLemmaAndPos(word1, pos);
 		List<Sense> senses = SenseDAO.findSensesByWordid( words.get(0).getWordid() );
@@ -75,14 +75,14 @@ public class KeyTermsFinder {
 			synsetId = sense.getSynset();
 			synset1 = SynsetDAO.findSynsetBySynset( synsetId );
 			synsetDef = SynsetDefDAO.findSynsetDefBySynsetAndLang(synsetId, Lang.eng);
-			System.out.println( synset1 );
-			System.out.println( synsetDef );
+			//System.out.println( synset1 );
+			//System.out.println( synsetDef );
 			synsetStrings.add(new Concept(synsetId, POS.valueOf(pos.toString())));
 			
 		}
 		
 		
-	    Concept con=synsetStrings.get(3);
+	    Concept con=synsetStrings.get(2);
 		//get the HyperTree of the word indicating the desired criterion (word1)
 		Set<String> history = new HashSet<String>();
 		List<List<String>> hyperTree1 = pathfinder.getHypernymTrees(con.getSynset(), history);

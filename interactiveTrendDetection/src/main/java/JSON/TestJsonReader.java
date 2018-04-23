@@ -15,6 +15,9 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
 
+import io.searchbox.client.JestClient;
+import io.searchbox.client.JestClientFactory;
+import io.searchbox.client.config.HttpClientConfig;
 import jcifs.smb.NtlmPasswordAuthentication;
 import jcifs.smb.SmbFile;
 import jcifs.smb.SmbFileOutputStream;
@@ -43,9 +46,11 @@ public class TestJsonReader {
                 //System.out.println("Record:\t" + currentLine);
                 
                 JsonElement jelement = new JsonParser().parse(currentLine);
-        	    	String patentTitle=getEPFULLTitle(jelement);
-        	        System.out.println(patentTitle);
-        	   
+            	String patenLanguage=getDETDL(jelement);
+        	    	if(patenLanguage.equals("\"en\"")){
+        	    		String patenDETD=getEPFULLDetailedDescription(jelement);
+        	    		System.out.println(patenDETD);
+        	    	}
             }
 
     	 }
@@ -70,7 +75,7 @@ public class TestJsonReader {
         JsonObject  jobject = jelement.getAsJsonObject();
         jobject = jobject.getAsJsonObject();
         JsonPrimitive tsPrimitive = jobject.getAsJsonPrimitive("_index");
-        result=tsPrimitive.getAsString();
+        //result=tsPrimitive.getAsString();
         result = tsPrimitive.toString();
        
         return result;
@@ -95,7 +100,7 @@ public class TestJsonReader {
     	String result="null";
     	
     	JsonObject  jobject = jelement.getAsJsonObject();
-        jobject = jobject.getAsJsonObject();
+        //jobject = jobject.getAsJsonObject();
         JsonElement jse=jobject.get("TIEN");
         
         if(!jse.isJsonNull()){
@@ -108,6 +113,40 @@ public class TestJsonReader {
         
         return result;
     }
+    static public String getEPFULLDetailedDescription(JsonElement jelement){
+    	String result="null";
+    	
+    	JsonObject  jobject = jelement.getAsJsonObject();
+        //jobject = jobject.getAsJsonObject();
+        JsonElement jse=jobject.get("DETD");
+        
+        if(!jse.isJsonNull()){
+        
+        JsonPrimitive tsPrimitive = jobject.getAsJsonPrimitive("DETD");
+        result=tsPrimitive.getAsString();
+        result = tsPrimitive.toString();
+        
+        }
+        
+        return result;
+    }
     
-
+    static public String getDETDL(JsonElement jelement){
+        String result="null";
+    	
+    	JsonObject  jobject = jelement.getAsJsonObject();
+        //jobject = jobject.getAsJsonObject();
+        JsonElement jse=jobject.get("DETDL");
+        
+        if(!jse.isJsonNull()){
+        
+        JsonPrimitive tsPrimitive = jobject.getAsJsonPrimitive("DETDL");
+        result=tsPrimitive.getAsString();
+        result = tsPrimitive.toString();
+        
+        }
+        
+        return result;
+    }
+    
 }
